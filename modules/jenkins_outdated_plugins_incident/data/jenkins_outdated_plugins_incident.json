@@ -1,0 +1,138 @@
+{
+  "name": "jenkins_outdated_plugins_incident",
+  "description": "The Jenkins outdated plugins incident occurs when one or more plugins installed on a Jenkins server are not up to date. This can lead to potential security vulnerabilities, performance issues, and compatibility problems with other plugins or applications that rely on them. The incident requires immediate attention and updates to the affected plugins to ensure the smooth functioning of Jenkins and prevent any potential security threats.",
+  "params": [
+    {
+      "name": "YOUR_JENKINS_PASSWORD",
+      "value": ""
+    },
+    {
+      "name": "YOUR_JENKINS_URL",
+      "value": ""
+    },
+    {
+      "name": "PATH_TO_JENKINS_UPDATE_CENTER",
+      "value": ""
+    },
+    {
+      "name": "LIST_OF_PLUGINS_TO_UPDATE",
+      "value": ""
+    },
+    {
+      "name": "JENKINS_HOME",
+      "value": ""
+    },
+    {
+      "name": "YOUR_JENKINS_USERNAME",
+      "value": ""
+    },
+    {
+      "name": "PATH_TO_JENKINS_PLUGINS",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Jenkins Outdated Plugins Incident\nThe Jenkins outdated plugins incident occurs when one or more plugins installed on a Jenkins server are not up to date. This can lead to potential security vulnerabilities, performance issues, and compatibility problems with other plugins or applications that rely on them. The incident requires immediate attention and updates to the affected plugins to ensure the smooth functioning of Jenkins and prevent any potential security threats."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the version of Jenkins running."
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `${JENKINS_HOME}/jenkins.sh version`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## List all installed plugins along with their versions."
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `${JENKINS_HOME}/jenkins.sh list-plugins`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check if any plugins have updates available."
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `${JENKINS_HOME}/jenkins.sh list-plugins | grep -v ')$' | awk '{ print $1 }' | xargs ${JENKINS_HOME}/jenkins.sh install-plugin`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Verify the status of updated plugins."
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `${JENKINS_HOME}/jenkins.sh list-plugins | grep -v ')$'`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Restart Jenkins for changes to take effect."
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `${JENKINS_HOME}/jenkins.sh restart`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## The system administrator may have overlooked plugin update notifications and failed to update them in a timely manner."
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_jenkins_plugin_update_checker($PATH_TO_JENKINS_UPDATE_CENTER, $PATH_TO_JENKINS_PLUGINS)"
+    },
+    {
+      "name": "cell_14",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## During the maintenance window, update the plugins by either manually downloading them from the Jenkins update center or by using a plugin manager tool like Jenkins CLI or Jenkins Configuration as Code."
+    },
+    {
+      "name": "cell_15",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_update_jenkins_plugins($YOUR_JENKINS_PASSWORD, $YOUR_JENKINS_URL, $LIST_OF_PLUGINS_TO_UPDATE, $YOUR_JENKINS_USERNAME)"
+    }
+  ]
+}
